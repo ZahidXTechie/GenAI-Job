@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interview API Tester</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #17211b;
+      --muted: #657168;
+      --paper: #f6f4ee;
+      --panel: #fffdf8;
+      --line: #d9ded6;
+      --accent: #d65a3a;
+      --accent-dark: #a93e27;
+      --success: #176b4d;
+      --error: #a52f27;
+      --shadow: 0 18px 55px rgba(38, 51, 42, 0.12);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-width: 320px;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 10% 0%, rgba(214, 90, 58, 0.13), transparent 28rem),
+        linear-gradient(135deg, #f6f4ee 0%, #edf2eb 100%);
+      font-family: Georgia, "Times New Roman", serif;
+    }
+
+    main {
+      width: min(980px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 56px 0 72px;
+    }
+
+    .eyebrow {
+      margin: 0 0 12px;
+      color: var(--accent-dark);
+      font: 700 0.76rem/1.2 Arial, sans-serif;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      max-width: 720px;
+      margin: 0;
+      font-size: clamp(2.5rem, 7vw, 5.8rem);
+      font-weight: 500;
+      line-height: 0.95;
+      letter-spacing: -0.04em;
+    }
+
+    .intro {
+      max-width: 630px;
+      margin: 22px 0 36px;
+      color: var(--muted);
+      font-size: 1.12rem;
+      line-height: 1.55;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.3fr) minmax(280px, 0.7fr);
+      gap: 22px;
+      align-items: start;
+    }
+
+    .panel {
+      padding: 28px;
+      background: rgba(255, 253, 248, 0.9);
+      border: 1px solid rgba(217, 222, 214, 0.9);
+      box-shadow: var(--shadow);
+    }
+
+    label {
+      display: block;
+      margin: 0 0 20px;
+      font: 700 0.78rem/1.2 Arial, sans-serif;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    textarea, input[type="file"], input[type="url"] {
+      display: block;
+      width: 100%;
+      margin-top: 9px;
+      color: var(--ink);
+      font: 1rem/1.5 Arial, sans-serif;
+    }
+
+    textarea, input[type="url"] {
+      padding: 13px 14px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 2px;
+      resize: vertical;
+    }
+
+    textarea:focus, input:focus {
+      outline: 3px solid rgba(214, 90, 58, 0.18);
+      border-color: var(--accent);
+    }
+
+    textarea { min-height: 150px; }
+    #selfDescription { min-height: 190px; }
+
+    input[type="file"] {
+      padding: 16px 12px;
+      background: #f3f5ef;
+      border: 1px dashed #aeb9ad;
+      cursor: pointer;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      margin-top: 24px;
+    }
+
+    button {
+      padding: 13px 20px;
+      color: #fff;
+      background: var(--accent);
+      border: 0;
+      border-radius: 2px;
+      font: 700 0.85rem Arial, sans-serif;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+
+    button:hover { background: var(--accent-dark); }
+    button:disabled { opacity: 0.6; cursor: wait; }
+
+    .hint {
+      margin: 0;
+      color: var(--muted);
+      font: 0.84rem/1.45 Arial, sans-serif;
+    }
+
+    .result-panel { position: sticky; top: 20px; }
+
+    .result-heading {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: baseline;
+      margin-bottom: 18px;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: 500;
+    }
+
+    #status {
+      color: var(--muted);
+      font: 700 0.72rem Arial, sans-serif;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    #status.success { color: var(--success); }
+    #status.error { color: var(--error); }
+
+    pre {
+      overflow: auto;
+      min-height: 260px;
+      max-height: 620px;
+      margin: 0;
+      padding: 16px;
+      color: #e8efe8;
+      background: #1c2922;
+      border-radius: 2px;
+      font: 0.82rem/1.55 Consolas, "Courier New", monospace;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    @media (max-width: 720px) {
+      main { padding-top: 36px; }
+      .layout { grid-template-columns: 1fr; }
+      .result-panel { position: static; }
+      .panel { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <p class="eyebrow">Local API diagnostic</p>
+    <h1>Interview report tester</h1>
+    <p class="intro">Send the same multipart request your frontend should send and inspect the raw backend response without opening Postman.</p>
+
+    <div class="layout">
+      <form class="panel" id="interviewForm">
+        <label>
+          API URL
+          <input id="apiUrl" type="url" value="http://localhost:3000/api/interview" required>
+        </label>
+
+        <label>
+          Resume PDF
+          <input id="resume" name="resume" type="file" accept="application/pdf" required>
+        </label>
+
+        <label>
+          Job description
+          <textarea id="jobDescription" name="jobDescription" placeholder="Paste the job description" required></textarea>
+        </label>
+
+        <label>
+          Self description
+          <textarea id="selfDescription" name="selfDescription" placeholder="Describe your experience and skills" required></textarea>
+        </label>
+
+        <div class="actions">
+          <button id="submitButton" type="submit">Send interview request</button>
+          <p class="hint">Your existing authentication cookie is sent automatically.</p>
+        </div>
+      </form>
+
+      <section class="panel result-panel" aria-live="polite">
+        <div class="result-heading">
+          <h2>Response</h2>
+          <span id="status">Waiting</span>
+        </div>
+        <pre id="result">Submit a request to see the status code and response body.</pre>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const form = document.getElementById("interviewForm");
+    const submitButton = document.getElementById("submitButton");
+    const status = document.getElementById("status");
+    const result = document.getElementById("result");
+
+    function showResult(label, text, type) {
+      status.textContent = label;
+      status.className = type;
+      result.textContent = text;
+    }
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      submitButton.disabled = true;
+      showResult("Sending", "Uploading resume and waiting for the API...", "");
+
+      const file = document.getElementById("resume").files[0];
+      const formData = new FormData();
+      formData.append("resume", file);
+      formData.append("jobDescription", document.getElementById("jobDescription").value);
+      formData.append("selfDescription", document.getElementById("selfDescription").value);
+
+      try {
+        const response = await fetch(document.getElementById("apiUrl").value, {
+          method: "POST",
+          body: formData,
+          credentials: "include"
+        });
+        const body = await response.text();
+        let formattedBody = body;
+
+        try {
+          formattedBody = JSON.stringify(JSON.parse(body), null, 2);
+        } catch (_) {
+          // Preserve non-JSON server responses exactly as returned.
+        }
+
+        showResult(`${response.status} ${response.statusText}`, formattedBody, response.ok ? "success" : "error");
+      } catch (error) {
+        showResult("Request failed", `${error.name}: ${error.message}\n\nPage origin: ${window.location.origin}\nAPI URL: ${document.getElementById("apiUrl").value}\n\nCheck that the backend is running and that CORS allows this page origin.`, "error");
+      } finally {
+        submitButton.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
