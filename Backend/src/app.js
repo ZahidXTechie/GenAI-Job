@@ -6,6 +6,7 @@ app.use(cors({
     origin: [
         "http://localhost:5173",
         "http://localhost:5174",
+        "https://jobprep-d4ukdyumf-zahidxtechie.vercel.app",
         process.env.FRONTEND_URL,
     ].filter(Boolean),
     credentials: true,
