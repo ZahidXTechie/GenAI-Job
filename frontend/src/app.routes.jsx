@@ -1,7 +1,7 @@
 import {createBrowserRouter} from "react-router";
 import Register from "./auth/pages/Register.jsx";
-import Login from "./auth/pages/login.jsx";
-import Protected from "./hooks/protected.jsx";
+import Login from "./auth/pages/Login.jsx";
+import Protected from "./hooks/Protected.jsx";
 import InterviewHome from "./interview/pages/InterviewHome.jsx";
 
 const router = createBrowserRouter([
