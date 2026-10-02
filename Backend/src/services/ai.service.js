@@ -87,7 +87,10 @@ async function generateResumePdf(html) {
         throw new TypeError("Resume HTML must be a non-empty string");
     }
 
-    const browser = await puppeteer.launch({headless: true});
+    const browser = await puppeteer.launch({
+        headless: true,
+        args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    });
     try {
         const page = await browser.newPage();
         await page.setContent(html, {waitUntil: "networkidle0"});
