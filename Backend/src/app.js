@@ -27,4 +27,18 @@ app.use("/api/interview", (req, res, next) => {
     next();
 }, interviewRouter);
 
+app.use((err, req, res, next) => {
+    console.error(`${req.method} ${req.originalUrl} failed`, err);
+
+    if (res.headersSent) {
+        return next(err);
+    }
+
+    const statusCode = err.statusCode || err.status || 500;
+    return res.status(statusCode).json({
+        message: "Request failed",
+        error: err.message || "Unexpected server error",
+    });
+});
+
 module.exports = app;
