@@ -9,11 +9,21 @@ const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const {handleLogin, loading} = useAuth();
+     const [error, seterror] = useState('');
     const handleSubmit = async (e)=>{
+       
+
         e.preventDefault();
-        await handleLogin(email, password);
+        seterror('');
+        try{
+            await handleLogin(email, password);
         navigate("/");
         console.log("Login successful");
+        }
+        catch(error){
+            seterror('Invalid email or password');
+        }
+        
         
     }
     
