@@ -186,7 +186,7 @@ function InterviewHome() {
       } catch (error) {
         setHistoryError(
           error.response?.data?.message ||
-            "Saved preparations could not be loaded.",
+            "Saved preparations could not be loaded. Try refreshing the page.",
         );
       } finally {
         setHistoryLoading(false);
